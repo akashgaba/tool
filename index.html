@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flashcards – New / Forget / Slow / Easy</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="auth" id="auth-section">
+        <h1 class="app-title">Flashcards</h1>
+        <p class="subtitle">Supabase-native spaced review</p>
+
+        <form id="auth-form" class="card auth-card">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="auth-email" required autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input
+              type="password"
+              id="auth-password"
+              required
+              autocomplete="current-password"
+            />
+          </label>
+
+          <div class="auth-actions">
+            <button type="button" id="signup-btn">Sign up</button>
+            <button type="button" id="login-btn" class="primary">Log in</button>
+          </div>
+
+          <p id="auth-message" class="message"></p>
+        </form>
+      </section>
+
+      <section class="app hidden" id="app-section">
+        <header class="app-header">
+          <div>
+            <h1 class="app-title">Flashcards</h1>
+            <p id="user-email" class="subtitle"></p>
+          </div>
+          <button id="logout-btn" class="secondary">Log out</button>
+        </header>
+
+        <section class="settings card">
+          <h2>Today</h2>
+          <div class="settings-row">
+            <label class="field inline">
+              <span>Daily limit</span>
+              <input
+                type="number"
+                id="daily-limit-input"
+                min="1"
+                max="200"
+                step="1"
+              />
+            </label>
+            <button id="save-settings-btn" class="secondary small">Save</button>
+          </div>
+          <p id="progress-text" class="muted">Today: 0 / 10 reviewed</p>
+        </section>
+
+        <section class="card flashcard" id="flashcard-section">
+          <div id="card-front" class="card-face">
+            <p class="muted">No cards loaded yet.</p>
+          </div>
+          <div id="card-back" class="card-face hidden"></div>
+
+          <div class="flashcard-actions">
+            <button id="show-answer-btn" class="primary">Show answer</button>
+          </div>
+
+          <div class="rating-actions hidden" id="rating-actions">
+            <button id="rating-forget-btn" class="danger">Forget</button>
+            <button id="rating-slow-btn" class="warning">Took time</button>
+            <button id="rating-easy-btn" class="success">Easy</button>
+          </div>
+        </section>
+
+        <section class="card" id="status-section">
+          <p id="status-message" class="message"></p>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
+
