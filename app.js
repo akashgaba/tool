@@ -2,9 +2,9 @@
 
 // IMPORTANT: set these with your Supabase project details before deploying.
 // For quick testing you can hardcode them here; for production prefer env vars.
-const SUPABASE_URL = window.SUPABASE_URL || "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_URL = window.SUPABASE_URL || "https://xcawzddjslkctnnwarsf.supabase.co";
 const SUPABASE_ANON_KEY =
-  window.SUPABASE_ANON_KEY || "YOUR_PUBLIC_ANON_KEY_HERE";
+  window.SUPABASE_ANON_KEY || "sb_publishable_Y55mMoHUOlTDz41CEZlrog_ZiMwu4Os";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
