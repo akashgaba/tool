@@ -6,7 +6,9 @@ const SUPABASE_URL = window.SUPABASE_URL || "https://xcawzddjslkctnnwarsf.supaba
 const SUPABASE_ANON_KEY =
   window.SUPABASE_ANON_KEY || "sb_publishable_Y55mMoHUOlTDz41CEZlrog_ZiMwu4Os";
 
-// Supabase UMD build attaches a global `supabase` with createClient
+// Supabase UMD build attaches a global `supabase` with createClient.
+// We create our own client instance with a different variable name to avoid
+// colliding with the global identifier.
 const { createClient } = window.supabase || {};
 if (!createClient) {
   throw new Error(
@@ -14,7 +16,7 @@ if (!createClient) {
   );
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // DOM elements
 const authSection = document.getElementById("auth-section");
@@ -119,7 +121,7 @@ async function handleSignUp() {
     return;
   }
 
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabaseClient.auth.signUp({ email, password });
   if (error) {
     setAuthMessage(error.message, "error");
     return;
@@ -136,7 +138,7 @@ async function handleLogin() {
     return;
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password,
   });
@@ -150,7 +152,7 @@ async function handleLogin() {
 }
 
 async function handleLogout() {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   currentUser = null;
   queue = [];
   reviewedToday = 0;
@@ -174,7 +176,7 @@ async function bootstrapUserData() {
 }
 
 async function loadUserSettings() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("user_settings")
     .select("*")
     .eq("user_id", currentUser.id)
@@ -187,7 +189,7 @@ async function loadUserSettings() {
 
   if (!data) {
     // create default
-    const { data: inserted, error: insertError } = await supabase
+    const { data: inserted, error: insertError } = await supabaseClient
       .from("user_settings")
       .insert({ user_id: currentUser.id })
       .select()
@@ -212,7 +214,7 @@ async function saveUserSettings() {
   }
   const limit = Math.min(Math.max(value, 1), 500);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("user_settings")
     .upsert(
       { user_id: currentUser.id, daily_limit: limit },
@@ -233,7 +235,7 @@ async function saveUserSettings() {
 
 async function calculateReviewedToday() {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const { count, error } = await supabase
+  const { count, error } = await supabaseClient
     .from("cards")
     .select("id", { count: "exact", head: true })
     .eq("user_id", currentUser.id)
@@ -257,7 +259,7 @@ async function loadCardQueue() {
     return;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("cards")
     .select("*")
     .eq("user_id", currentUser.id)
@@ -294,7 +296,7 @@ async function rateCurrentCard(rating) {
   const newBox = nextBoxForRating(card.box, rating);
   const now = new Date().toISOString();
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("cards")
     .update({
       box: newBox,
@@ -377,7 +379,7 @@ ratingEasyBtn.addEventListener("click", () => {
 
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await supabaseClient.auth.getSession();
 
   if (session?.user) {
     await onUserSignedIn(session.user);
@@ -385,7 +387,7 @@ ratingEasyBtn.addEventListener("click", () => {
     showAuth();
   }
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
     if (session?.user) {
       onUserSignedIn(session.user).catch((err) =>
         setStatus(`Unexpected error: ${err.message}`, "error"),
