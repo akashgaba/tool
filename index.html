@@ -63,6 +63,21 @@
           <p id="progress-text" class="muted">Today: 0 / 10 reviewed</p>
         </section>
 
+        <section class="card add-card" id="add-card-section">
+          <h2>Add card</h2>
+          <label class="field">
+            <span>Front</span>
+            <textarea id="add-front" rows="2" class="textarea"></textarea>
+          </label>
+          <label class="field">
+            <span>Back</span>
+            <textarea id="add-back" rows="2" class="textarea"></textarea>
+          </label>
+          <div class="add-card-actions">
+            <button id="add-card-btn" class="secondary small">Save card</button>
+          </div>
+        </section>
+
         <section class="card flashcard" id="flashcard-section">
           <div id="card-front" class="card-face">
             <p class="muted">No cards loaded yet.</p>
@@ -86,9 +101,7 @@
       </section>
     </main>
 
-    <!-- Supabase JS (UMD build exposes global `supabase`) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./app.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
 

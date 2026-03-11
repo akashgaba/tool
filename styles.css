@@ -71,11 +71,13 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.flashcard {
+.flashcard,
+.add-card {
   margin-bottom: 1rem;
 }
 
-.card-face {
+.card-face,
+.textarea {
   min-height: 80px;
   white-space: pre-wrap;
   word-break: break-word;
@@ -107,7 +109,8 @@ body {
 
 input[type="email"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+textarea {
   border-radius: 0.5rem;
   border: 1px solid rgba(148, 163, 184, 0.4);
   padding: 0.5rem 0.6rem;
@@ -116,7 +119,8 @@ input[type="number"] {
   color: #e5e7eb;
 }
 
-input:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border-color: #38bdf8;
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
@@ -182,6 +186,12 @@ button:not(:disabled):active {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.add-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
 }
 
 .muted {

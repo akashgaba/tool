@@ -2,19 +2,13 @@
 
 // IMPORTANT: set these with your Supabase project details before deploying.
 // For quick testing you can hardcode them here; for production prefer env vars.
-const SUPABASE_URL = window.SUPABASE_URL || "https://xcawzddjslkctnnwarsf.supabase.co";
+const SUPABASE_URL =
+  window.SUPABASE_URL || "https://xcawzddjslkctnnwarsf.supabase.co";
 const SUPABASE_ANON_KEY =
-  window.SUPABASE_ANON_KEY || "sb_publishable_Y55mMoHUOlTDz41CEZlrog_ZiMwu4Os";
+  window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXd6ZGRqc2xrY3RubndhcnNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMzk0MzUsImV4cCI6MjA4ODgxNTQzNX0.CJvazTltuIC6g92nAHJQWkVRmQ0s_h4BX9iJ4kPMb1I";
 
-// Supabase UMD build attaches a global `supabase` with createClient.
-// We create our own client instance with a different variable name to avoid
-// colliding with the global identifier.
-const { createClient } = window.supabase || {};
-if (!createClient) {
-  throw new Error(
-    "Supabase client library not loaded. Check the <script> tag in index.html.",
-  );
-}
+// Use Supabase JS v2 via ESM import (app.js is loaded as type="module" in index.html)
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -44,6 +38,10 @@ const ratingSlowBtn = document.getElementById("rating-slow-btn");
 const ratingEasyBtn = document.getElementById("rating-easy-btn");
 
 const statusMessage = document.getElementById("status-message");
+
+const addFrontInput = document.getElementById("add-front");
+const addBackInput = document.getElementById("add-back");
+const addCardBtn = document.getElementById("add-card-btn");
 
 // State
 let currentUser = null;
@@ -325,6 +323,40 @@ async function rateCurrentCard(rating) {
   }
 }
 
+async function addNewCard() {
+  const front = (addFrontInput.value || "").trim();
+  const back = (addBackInput.value || "").trim();
+  if (!front || !back) {
+    setStatus("Front and back are required to add a card.", "error");
+    return;
+  }
+
+  if (!currentUser) {
+    setStatus("You must be logged in to add cards.", "error");
+    return;
+  }
+
+  const { error } = await supabaseClient.from("cards").insert({
+    user_id: currentUser.id,
+    front,
+    back,
+  });
+
+  if (error) {
+    setStatus(`Failed to add card: ${error.message}`, "error");
+    return;
+  }
+
+  addFrontInput.value = "";
+  addBackInput.value = "";
+  setStatus("Card added.");
+
+  if (reviewedToday < dailyLimit) {
+    await loadCardQueue();
+    renderCurrentCard();
+  }
+}
+
 // Event listeners
 signupBtn.addEventListener("click", () => {
   handleSignUp().catch((err) =>
@@ -372,6 +404,12 @@ ratingEasyBtn.addEventListener("click", () => {
   );
 });
 
+addCardBtn.addEventListener("click", () => {
+  addNewCard().catch((err) =>
+    setStatus(`Unexpected error: ${err.message}`, "error"),
+  );
+});
+
 // Session bootstrap
 (async function init() {
   setStatus("");
@@ -393,9 +431,11 @@ ratingEasyBtn.addEventListener("click", () => {
         setStatus(`Unexpected error: ${err.message}`, "error"),
       );
     } else {
-      handleLogout().catch(() => {
-        // ignore
-      });
+      // Just reset local state & show auth; do NOT call signOut again
+      currentUser = null;
+      queue = [];
+      reviewedToday = 0;
+      showAuth();
     }
   });
 })();
