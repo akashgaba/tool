@@ -6,7 +6,15 @@ const SUPABASE_URL = window.SUPABASE_URL || "https://xcawzddjslkctnnwarsf.supaba
 const SUPABASE_ANON_KEY =
   window.SUPABASE_ANON_KEY || "sb_publishable_Y55mMoHUOlTDz41CEZlrog_ZiMwu4Os";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Supabase UMD build attaches a global `supabase` with createClient
+const { createClient } = window.supabase || {};
+if (!createClient) {
+  throw new Error(
+    "Supabase client library not loaded. Check the <script> tag in index.html.",
+  );
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // DOM elements
 const authSection = document.getElementById("auth-section");
